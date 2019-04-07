@@ -11,15 +11,21 @@ extern crate fern;
 extern crate rocket;
 extern crate rocket_contrib;
 
-use rocket::{get, Config};
+use rocket::{get, routes, Config};
+use rocket::response::content;
 use rocket_contrib::serve::StaticFiles;
 use std::env;
 use std::path::Path;
 
 /// Declare a handler.
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+#[get("/player/<id>/name")]
+fn player_name(id: usize) -> content::Json<String> {
+    content::Json(format!("\"Player {:?}\"", id))
+}
+
+#[get("/player/<id>/score")]
+fn player_score(id: usize) -> content::Json<String> {
+    content::Json(id.to_string())
 }
 
 /// Configure Rocket to serve on the port requested by Heroku.
@@ -69,5 +75,6 @@ fn main() {
 
     rocket::custom(configure())
            .mount("/", StaticFiles::from(path))
+           .mount("/api", routes![player_name, player_score])
            .launch();
 }
