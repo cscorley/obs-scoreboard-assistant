@@ -1,0 +1,48 @@
+[2019-04-07][16:38:59][obs_scoreboard_assistant][INFO] Running / with directory: Some("./dist")
+[2019-04-07][16:38:59][launch][INFO] 🔧 Configured for development.
+[2019-04-07][16:38:59][launch_][INFO] address: [1;49;39mlocalhost[0m
+[2019-04-07][16:38:59][launch_][INFO] port: [1;49;39m8000[0m
+[2019-04-07][16:38:59][launch_][INFO] log: [1;49;39mnormal[0m
+[2019-04-07][16:38:59][launch_][INFO] workers: [1;49;39m16[0m
+[2019-04-07][16:38:59][launch_][INFO] secret key: [1;49;39mgenerated[0m
+[2019-04-07][16:38:59][launch_][INFO] limits: [1;49;39mforms = 32KiB[0m
+[2019-04-07][16:38:59][launch_][INFO] keep-alive: [1;49;39m5s[0m
+[2019-04-07][16:38:59][launch_][INFO] tls: [1;49;39mdisabled[0m
+[2019-04-07][16:38:59][rocket::rocket][INFO] 🛰  [35mMounting[0m [34m/[0m[35m:[0m
+[2019-04-07][16:38:59][_][INFO] [32mGET[0m [34m/[0m [[1;49;39m10[0m]
+[2019-04-07][16:38:59][_][INFO] [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:38:59][launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://[0m[1;4;49;39mlocalhost:8000[0m
+[2019-04-07][16:40:06][obs_scoreboard_assistant][INFO] Running / with directory: "./dist"
+[2019-04-07][16:40:06][launch][INFO] 🔧 Configured for development.
+[2019-04-07][16:40:06][launch_][INFO] address: [1;49;39mlocalhost[0m
+[2019-04-07][16:40:06][launch_][INFO] port: [1;49;39m8000[0m
+[2019-04-07][16:40:06][launch_][INFO] log: [1;49;39mnormal[0m
+[2019-04-07][16:40:06][launch_][INFO] workers: [1;49;39m16[0m
+[2019-04-07][16:40:06][launch_][INFO] secret key: [1;49;39mgenerated[0m
+[2019-04-07][16:40:06][launch_][INFO] limits: [1;49;39mforms = 32KiB[0m
+[2019-04-07][16:40:06][launch_][INFO] keep-alive: [1;49;39m5s[0m
+[2019-04-07][16:40:06][launch_][INFO] tls: [1;49;39mdisabled[0m
+[2019-04-07][16:40:06][rocket::rocket][INFO] 🛰  [35mMounting[0m [34m/[0m[35m:[0m
+[2019-04-07][16:40:06][_][INFO] [32mGET[0m [34m/[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:06][_][INFO] [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:06][launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://[0m[1;4;49;39mlocalhost:8000[0m
+[2019-04-07][16:40:20][rocket::rocket][INFO] [32mGET[0m [34m/[0m [33mtext/html[0m:
+[2019-04-07][16:40:20][_][INFO] Matched: [32mGET[0m [34m/[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:20][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2019-04-07][16:40:20][_][INFO] [32mResponse succeeded.[0m
+[2019-04-07][16:40:20][rocket::rocket][INFO] [32mGET[0m [34m/js/app.f1df0e03.js[0m:
+[2019-04-07][16:40:20][rocket::rocket][INFO] [32mGET[0m [34m/css/app.e2713bb0.css[0m [33mtext/css[0m:
+[2019-04-07][16:40:20][rocket::rocket][INFO] [32mGET[0m [34m/js/chunk-vendors.ecd76ec1.js[0m:
+[2019-04-07][16:40:20][_][INFO] Matched: [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:20][_][INFO] Matched: [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:20][_][INFO] Matched: [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:20][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2019-04-07][16:40:20][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2019-04-07][16:40:20][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2019-04-07][16:40:20][_][INFO] [32mResponse succeeded.[0m
+[2019-04-07][16:40:20][_][INFO] [32mResponse succeeded.[0m
+[2019-04-07][16:40:20][_][INFO] [32mResponse succeeded.[0m
+[2019-04-07][16:40:20][rocket::rocket][INFO] [32mGET[0m [34m/img/logo.82b9c7a5.png[0m [33mimage/webp[0m:
+[2019-04-07][16:40:20][_][INFO] Matched: [32mGET[0m [34m/<path..>[0m [[1;49;39m10[0m]
+[2019-04-07][16:40:20][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2019-04-07][16:40:20][_][INFO] [32mResponse succeeded.[0m
