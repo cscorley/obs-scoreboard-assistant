@@ -1,0 +1,20 @@
+{
+  "name": "OBS Scoreboard Assistant",
+  "description": "Edit the current OBS scoreboard from a web UI",
+  "repository": "https://github.com/cscorley/obs-scoreboard-assistant",
+  "success_url": "/",
+  "website": "https://github.com/cscorley/obs-scoreboard-assistant",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/emk/heroku-buildpack-rust.git"
+    }
+  ],
+  "addons": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ]
+}
