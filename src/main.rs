@@ -4,7 +4,8 @@
 
 #![feature(proc_macro_hygiene, decl_macro)]
 
-use rocket::{self, get, routes, Config};
+use rocket::{self, get, Config};
+use rocket_contrib::serve::StaticFiles;
 use std::env;
 
 /// Declare a handler.
@@ -25,5 +26,7 @@ fn configure() -> Config {
 
 /// Start our server.
 fn main() {
-    rocket::custom(configure()).mount("/", routes![index]).launch();
+    rocket::custom(configure())
+           .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/dist")))
+           .launch();
 }
