@@ -1,43 +1,28 @@
-//! A simple Rocket application, based on the example in [Getting Started][].
-//!
-//! [Getting Started]: https://rocket.rs/v0.4/guide/getting-started/
-
-#![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use]
 extern crate log;
-extern crate chrono;
+extern crate actix_files;
+extern crate actix_web;
 extern crate fern;
-extern crate rocket;
-extern crate rocket_contrib;
 
-use rocket::{get, routes, Config};
-use rocket::response::content;
-use rocket_contrib::serve::StaticFiles;
+
+use actix_files as fs;
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use std::env;
 use std::path::Path;
 
-/// Declare a handler.
-#[get("/player/<id>/name")]
-fn player_name(id: usize) -> content::Json<String> {
-    content::Json(format!("\"Player {:?}\"", id))
-}
-
-#[get("/player/<id>/score")]
-fn player_score(id: usize) -> content::Json<String> {
-    content::Json(id.to_string())
-}
-
 /// Configure Rocket to serve on the port requested by Heroku.
-fn configure() -> Config {
-    let mut config = Config::active().expect("could not load configuration");
+fn get_binding_address() -> String {
     if let Ok(port_str) = env::var("PORT") {
-        let port = port_str.parse().expect("could not parse PORT");
-        config.set_port(port);
+        let port: usize = port_str.parse().expect("could not parse PORT");
+        return format!("127.0.0.1:{}", port);
     }
-    config
+
+    return "127.0.0.1:8888".to_string();
 }
 
+fn index2() -> impl Responder {
+    HttpResponse::Ok().body("Hello world again!")
+}
 
 fn setup_logger() -> Result<(), fern::InitError> {
     fern::Dispatch::new()
@@ -67,14 +52,23 @@ fn main() {
         }
     };
 
-    let dist_path = Path::new("./dist");
-    let manifest_path = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/dist"));
-    let path = if dist_path.exists() { dist_path } else { manifest_path };
+    HttpServer::new(|| {
+        let dist_path = Path::new("./dist");
+        let manifest_path = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/dist"));
+        let path = if dist_path.exists() {
+            dist_path
+        } else {
+            manifest_path
+        };
 
-    info!("Running / with directory: {:?}", path);
+        info!("Running / with directory: {:?}", path);
 
-    rocket::custom(configure())
-           .mount("/", StaticFiles::from(path))
-           .mount("/api", routes![player_name, player_score])
-           .launch();
+        App::new()
+            .route("/again", web::get().to(index2))
+            .service(fs::Files::new("/", path).index_file("index.html"))
+    })
+    .bind(get_binding_address())
+    .unwrap()
+    .run()
+    .unwrap();
 }
