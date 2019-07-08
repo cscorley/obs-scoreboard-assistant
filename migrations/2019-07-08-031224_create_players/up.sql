@@ -1,0 +1,8 @@
+-- Your SQL goes here
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE TABLE players (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL,
+  score SMALLINT NOT NULL DEFAULT 0,
+  updated_on DATE NOT NULL DEFAULT CURRENT_DATE
+);

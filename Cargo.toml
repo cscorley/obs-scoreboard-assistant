@@ -1,5 +1,5 @@
 [package]
-name = "obs-scoreboard-assistant"
+name = "obs_scoreboard_assistant"
 version = "0.1.0"
 authors = ["Christopher S. Corley <cscorley@gmail.com>"]
 edition = "2018"
@@ -8,8 +8,9 @@ edition = "2018"
 log = "0.4"
 fern = "0.5"
 chrono = "0.4.7"
-diesel = { version = "1.4.2", features = ["postgres"] }
+diesel = { version = "1.4.2", features = ["postgres", "chrono", "uuid"] }
 dotenv = "0.14.1"
 actix-web = "1.0"
 actix-files = "0.1.3"
 serde = "1.0"
+uuid = "0.7.4"

@@ -2,11 +2,17 @@
 extern crate log;
 extern crate actix_files;
 extern crate actix_web;
+extern crate diesel;
+extern crate dotenv;
 extern crate fern;
+extern crate obs_scoreboard_assistant;
 extern crate serde;
 
+use self::models::*;
 use actix_files as fs;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder, Result};
+use diesel::prelude::*;
+use obs_scoreboard_assistant::*;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::path::Path;
@@ -30,7 +36,7 @@ struct Info {
 }
 
 #[derive(Serialize, Deserialize)]
-struct Player {
+struct JPlayer {
     name: String,
     score: usize,
 }
@@ -41,28 +47,46 @@ struct AppState {
     score: Arc<AtomicUsize>,
 }
 
-
 fn show_player_info((info, data): (web::Path<Info>, web::Data<AppState>)) -> Result<HttpResponse> {
-    Ok(HttpResponse::Ok().json(Player {
+    Ok(HttpResponse::Ok().json(JPlayer {
         name: data.name.read().unwrap().to_string(),
-        score: data.score.load(Ordering::Relaxed)
+        score: data.score.load(Ordering::Relaxed),
     }))
 }
 
 fn show_player_name((info, data): (web::Path<Info>, web::Data<AppState>)) -> Result<String> {
-    Ok(format!("Welcome {} {} {}!", info.key, info.id, data.score.load(Ordering::Relaxed)))
+    Ok(format!(
+        "Welcome {} {} {}!",
+        info.key,
+        info.id,
+        data.score.load(Ordering::Relaxed)
+    ))
 }
 
 fn show_player_score((info, data): (web::Path<Info>, web::Data<AppState>)) -> Result<String> {
-    Ok(format!("Welcome {} {} {}!", info.key, info.id, data.score.load(Ordering::Relaxed)))
+    Ok(format!(
+        "Welcome {} {} {}!",
+        info.key,
+        info.id,
+        data.score.load(Ordering::Relaxed)
+    ))
 }
 
-fn set_player_info((info, player, data): (web::Path<Info>, web::Json<Player>, web::Data<AppState>)) -> Result<String> {
+fn set_player_info(
+    (info, player, data): (web::Path<Info>, web::Json<JPlayer>, web::Data<AppState>),
+) -> Result<String> {
     let mut s = data.name.write().unwrap();
     *s = player.name.to_owned();
 
     data.score.store(player.score, Ordering::Relaxed);
-    Ok(format!("Welcome {} {} {} {} {}!", info.key, info.id, player.name, player.score, data.score.load(Ordering::Relaxed)))
+    Ok(format!(
+        "Welcome {} {} {} {} {}!",
+        info.key,
+        info.id,
+        player.name,
+        player.score,
+        data.score.load(Ordering::Relaxed)
+    ))
 }
 
 fn index2() -> impl Responder {
@@ -107,6 +131,20 @@ fn main() {
 
     info!("Running / with directory: {:?}", path);
 
+    use self::schema::players::dsl::*;
+
+    let connection = establish_connection();
+    let results = players
+        .limit(5)
+        .load::<Player>(&connection)
+        .expect("Error loading players");
+
+    info!("Displaying {} players", results.len());
+    for player in results {
+        info!("{} {}", player.id, player.name);
+        info!("-----------\n");
+    }
+
     let data = AppState {
         name: Arc::new(RwLock::new("".to_string())),
         score: Arc::new(AtomicUsize::new(0)),
@@ -121,7 +159,7 @@ fn main() {
                     .route("{key}/player/{id}", web::get().to(show_player_info))
                     .route("{key}/player/{id}/name", web::get().to(show_player_name))
                     .route("{key}/player/{id}/score", web::get().to(show_player_score))
-                    .route("{key}/player/{id}/update", web::post().to(set_player_info))
+                    .route("{key}/player/{id}/update", web::post().to(set_player_info)),
             )
             .service(fs::Files::new("/", path).index_file("index.html"))
     })
