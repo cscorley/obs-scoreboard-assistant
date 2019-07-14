@@ -1,1 +1,1 @@
-web: ./target/release/obs-scoreboard-assistant
+web: ./target/release/heroku
