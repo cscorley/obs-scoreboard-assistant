@@ -9,10 +9,7 @@
       "url": "heroku/nodejs"
     },
     {
-      "url": "https://github.com/emk/heroku-buildpack-rust.git"
-    },
-    {
-      "url": "https://github.com/sgrif/heroku-buildpack-diesel.git"
+      "url": "emk/rust"
     }
   ],
   "addons": [
