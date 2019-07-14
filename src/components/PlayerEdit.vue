@@ -1,8 +1,8 @@
 <template>
   <div class="player-edit">
     <h1>{{ id }} {{ name }} {{ score }}</h1>
-    <input id="name" v-model="name" @change="onChange" />
-    <input id="score" v-model.number="score" @change="onChange" />
+    <input id="name" v-model="name" @change="onChanged" />
+    <input id="score" v-model.number="score" @change="onChanged" />
   </div>
 </template>
 
@@ -23,10 +23,24 @@ export default {
     initialName: String,
     initialScore: Number
   },
+  created() {
+    var endpoint = `/api/${this.appKey}/player/${this.id}`;
+    console.log("fetching from", endpoint);
+    axios
+      .get(endpoint)
+      .then(response => {
+        console.log(response);
+        this.name = response.data.name;
+        this.score = response.data.score;
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  },
   methods: {
-    onChange(event) {
-      console.log(event);
+    onChanged(event) {
       var endpoint = `/api/${this.appKey}/player/${this.id}/update`;
+      console.log("posting to", endpoint);
       axios
         .post(endpoint, {
           name: this.name,
