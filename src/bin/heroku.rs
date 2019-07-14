@@ -26,10 +26,10 @@ use self::schema::players::dsl::*;
 fn get_binding_address() -> String {
     if let Ok(port_str) = env::var("PORT") {
         let port: usize = port_str.parse().expect("could not parse PORT");
-        return format!("127.0.0.1:{}", port);
+        return format!("0.0.0.0:{}", port);
     }
 
-    return "127.0.0.1:8888".to_string();
+    return "0.0.0.0:8888".to_string();
 }
 
 #[derive(Deserialize)]
