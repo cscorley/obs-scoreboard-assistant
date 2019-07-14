@@ -201,6 +201,10 @@ fn main() {
         }
     };
 
+    for var in env::vars() {
+        info!("Environment variable {:?}: {:?}", var.0, var.1);
+    }
+
     let dist_path = Path::new("./dist");
     let manifest_path = Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/dist"));
     let path = if dist_path.exists() {
