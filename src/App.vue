@@ -1,38 +1,14 @@
 <template>
   <div id="app">
-    <input id="appKeyInput" v-model="appKey" />
-    <PlayerEdit
-      :id="1"
-      :app-key="appKey"
-      :initial-name="defaultName"
-      :initial-score="defaultScore"
-    />
-    <PlayerEdit
-      :id="2"
-      :app-key="appKey"
-      :initial-name="defaultName"
-      :initial-score="defaultScore"
-    />
+    <!-- route outlet -->
+    <!-- component matched by the route will render here -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import PlayerEdit from "./components/PlayerEdit.vue";
-
 export default {
-  name: "app",
-  data: function() {
-    return {
-      appKey: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-      defaultName: "Unknown",
-      defaultScore: 0,
-      message: "butts butts butts",
-      otherThing: 420
-    };
-  },
-  components: {
-    PlayerEdit
-  }
+  name: "app"
 };
 </script>
 

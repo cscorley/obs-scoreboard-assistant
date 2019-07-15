@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     onChanged(event) {
+      // Todo this could be a watcher + debounce
       var endpoint = `/api/${this.appKey}/player/${this.id}/update`;
       console.log("posting to", endpoint);
       axios
