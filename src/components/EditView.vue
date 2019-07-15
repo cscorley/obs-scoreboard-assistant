@@ -1,13 +1,8 @@
 <template>
   <div id="editView">
-    <h1>Hello App!</h1>
     <p>
-      <!-- use router-link component for navigation. -->
-      <!-- specify the link by passing the `to` prop. -->
-      <!-- `<router-link>` will be rendered as an `<a>` tag by default -->
-      <router-link to="/edit">Go to Foo</router-link>
-      <br />
-      <router-link to="/overlay">Go to Bar</router-link>
+      <router-link to="/edit">Edit</router-link>&nbsp;
+      <router-link :to="{ path: `/overlay/${appKey}`}">Overlay</router-link>
     </p>
     <input id="appKeyInput" v-model="appKey" />
     <PlayerEdit

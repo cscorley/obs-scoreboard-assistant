@@ -1,13 +1,22 @@
 
 <template>
-  <div class="overlay">
-    <h1>{{ players[0].name }} {{ players[0].score }}</h1>
-    <h1>{{ players[1].name }} {{ players[1].score }}</h1>
+  <div id="overlay" class="container-fluid">
+    <div class="row">
+      <div class="col text-trucate text-right truncate">{{ players[0].name }}</div>
+      <div class="col-auto text-center">&#9876;</div>
+      <div class="col text-trucate text-left truncate">{{ players[1].name }}</div>
+    </div>
+    <div class="row">
+      <div class="col text-right">{{ players[0].score }}</div>
+      <div class="col-auto text-center">&#8226;</div>
+      <div class="col text-left">{{ players[1].score }}</div>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { setInterval } from "timers";
 
 export default {
   name: "Overlay",
@@ -22,39 +31,39 @@ export default {
     }
   },
   created() {
-      // TODO this needs to execute every few seconds
-    [0, 1].forEach(element => {
-      var endpoint = `/api/${this.appKey}/player/${element}`;
-      console.log("fetching from", endpoint);
-      axios
-        .get(endpoint)
-        .then(response => {
-          console.log(response);
-          this.players[element].name = response.data.name;
-          this.players[element].score = response.data.score;
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    });
+    this.performUpdate();
+    setInterval(this.performUpdate, 5000);
+  },
+  methods: {
+    performUpdate() {
+      [0, 1].forEach(element => {
+        var endpoint = `/api/${this.appKey}/player/${element}`;
+        axios
+          .get(endpoint)
+          .then(response => {
+            if (response.data.name !== undefined) {
+              this.players[element].name = response.data.name;
+              this.players[element].score = response.data.score;
+            }
+          })
+          .catch();
+      });
+    }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+#overlay {
+  display: block;
+  font-size: 30px;
+  font-size: 3.5vw;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+
+.truncate {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

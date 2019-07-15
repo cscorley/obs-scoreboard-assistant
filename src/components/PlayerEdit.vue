@@ -25,34 +25,24 @@ export default {
   },
   created() {
     var endpoint = `/api/${this.appKey}/player/${this.id}`;
-    console.log("fetching from", endpoint);
     axios
       .get(endpoint)
       .then(response => {
-        console.log(response);
         this.name = response.data.name;
         this.score = response.data.score;
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch();
   },
   methods: {
-    onChanged(event) {
+    onChanged() {
       // Todo this could be a watcher + debounce
       var endpoint = `/api/${this.appKey}/player/${this.id}/update`;
-      console.log("posting to", endpoint);
       axios
         .post(endpoint, {
           name: this.name,
           score: this.score
         })
-        .then(response => {
-          console.log(response);
-        })
-        .catch(e => {
-          console.log(e);
-        });
+        .catch();
     }
   }
 };
