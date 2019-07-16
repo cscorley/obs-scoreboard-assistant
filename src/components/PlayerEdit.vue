@@ -1,8 +1,12 @@
 <template>
   <div class="player-edit">
-    <h1>{{ id }} {{ name }} {{ score }}</h1>
-    <input id="name" v-model="name" @change="onChanged" />
-    <input id="score" v-model.number="score" @change="onChanged" />
+    <h1>{{ name }} {{ score }}</h1>
+    <b-form @reset="onReset" @submit="onSubmit">
+      <b-form-select id="name" v-model="name" @change="onNameChanged" :options="possibleNames" />
+      <b-form-input id="score" v-model.number="score" @change="onScoreChanged" type="number" />
+      <b-button type="submit" variant="primary">Submit</b-button>
+      <b-button type="reset" variant="danger">Clear</b-button>
+    </b-form>
   </div>
 </template>
 
@@ -21,7 +25,8 @@ export default {
     appKey: String,
     id: Number,
     initialName: String,
-    initialScore: Number
+    initialScore: Number,
+    possibleNames: Array
   },
   created() {
     var endpoint = `/api/${this.appKey}/player/${this.id}`;
@@ -34,7 +39,14 @@ export default {
       .catch();
   },
   methods: {
-    onChanged() {
+    onScoreChanged() {
+      this.onSubmit();
+    },
+    onNameChanged() {
+      this.score = 0;
+      this.onSubmit();
+    },
+    onSubmit() {
       // Todo this could be a watcher + debounce
       var endpoint = `/api/${this.appKey}/player/${this.id}/update`;
       axios
@@ -43,6 +55,11 @@ export default {
           score: this.score
         })
         .catch();
+    },
+    onReset() {
+      this.name = "";
+      this.score = 0;
+      this.onChanged();
     }
   }
 };

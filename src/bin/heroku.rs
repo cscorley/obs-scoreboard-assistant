@@ -20,6 +20,7 @@ use std::path::Path;
 use uuid::Uuid;
 
 use self::schema::keys::dsl::*;
+use self::schema::names::dsl::*;
 use self::schema::players::dsl::*;
 
 /// Configure Rocket to serve on the port requested by Heroku.
@@ -36,6 +37,11 @@ fn get_binding_address() -> String {
 struct Info {
     key: Uuid,
     id: i32,
+}
+
+#[derive(Deserialize)]
+struct KeyInfo {
+    key: Uuid,
 }
 
 #[derive(Deserialize)]
@@ -135,7 +141,7 @@ fn set_player_info(
     };
 
     let player_results = players
-        .find((info.id, key_id))
+        .find((info.id, new_key_id))
         .load::<Player>(conn)
         .expect("Error loading players");
 
@@ -144,17 +150,17 @@ fn set_player_info(
         diesel::insert_into(players)
             .values((
                 self::schema::players::dsl::id.eq(info.id),
-                name.eq(&player.name),
-                key_id.eq(new_key_id),
+                self::schema::players::dsl::name.eq(&player.name),
+                self::schema::players::dsl::key_id.eq(new_key_id),
                 score.eq(player.score),
             ))
             .execute(conn)
             .expect("Could not insert new player");
     } else {
-        diesel::update(players.find((info.id, key_id)))
+        diesel::update(players.find((info.id, new_key_id)))
             .set((
-                name.eq(&player.name),
-                score.eq(player.score),
+                self::schema::players::dsl::name.eq(&player.name),
+                self::schema::players::dsl::score.eq(player.score),
                 self::schema::players::dsl::updated_on.eq(chrono::Utc::now()),
             ))
             .execute(conn)
@@ -162,15 +168,80 @@ fn set_player_info(
     }
 
     let player_results = players
-        .find((info.id, key_id))
+        .find((info.id, new_key_id))
         .load::<Player>(conn)
         .expect("Error loading players");
 
     Ok(HttpResponse::Ok().json(&player_results[0]))
 }
 
-fn index2() -> impl Responder {
-    HttpResponse::Ok().body("Hello world again!")
+fn get_names((info, pool): (web::Path<KeyInfo>, web::Data<Pool>)) -> Result<HttpResponse> {
+    info!("get names: {:?}", info.key);
+    let conn = &pool.get().unwrap();
+    let key_result = keys
+        .filter(key.eq(info.key))
+        .load::<Key>(conn)
+        .expect("Error loading keys");
+
+    if key_result.len() == 0 {
+        return Err(error::ErrorBadRequest("Bad key"));
+    }
+
+    let name_results = names
+        .filter(self::schema::names::dsl::key_id.eq(key_result[0].id))
+        .load::<Name>(conn)
+        .expect("Error loading names");
+
+    Ok(HttpResponse::Ok().json(name_results))
+}
+
+fn set_names(
+    (info, new_names, pool): (web::Path<KeyInfo>, web::Json<Vec<String>>, web::Data<Pool>),
+) -> Result<HttpResponse> {
+    info!("set names: {:?} {:?}", info.key, new_names);
+    let conn = &pool.get().unwrap();
+    // Check for key
+    // temp: if no key we can just insert one, who cares for now
+    let key_result = keys
+        .filter(key.eq(info.key))
+        .load::<Key>(conn)
+        .expect("Error loading players");
+
+    let new_key_id = if key_result.len() == 0 {
+        diesel::insert_into(keys)
+            .values(key.eq(info.key))
+            .returning(self::schema::keys::dsl::id)
+            .get_result(conn)
+            .expect("Could not insert new key")
+    } else {
+        key_result[0].id
+    };
+
+    diesel::delete(names.filter(self::schema::names::dsl::key_id.eq(new_key_id)))
+        .execute(conn)
+        .expect("Could not delete old names");
+
+    let new_name_values: Vec<_> = new_names
+        .iter()
+        .map(|x| {
+            (
+                self::schema::names::dsl::name.eq(x),
+                self::schema::names::dsl::key_id.eq(new_key_id),
+            )
+        })
+        .collect();
+
+    diesel::insert_into(names)
+        .values(new_name_values)
+        .execute(conn)
+        .expect("Could not insert new player");
+
+    let name_results = names
+        .filter(self::schema::names::dsl::key_id.eq(new_key_id))
+        .load::<Name>(conn)
+        .expect("Error loading names");
+
+    Ok(HttpResponse::Ok().json(name_results))
 }
 
 fn setup_logger() -> Result<(), fern::InitError> {
@@ -219,14 +290,15 @@ fn main() {
 
     HttpServer::new(move || {
         App::new()
-            .route("/again", web::get().to(index2))
             .service(
                 web::scope("/api")
                     .data(pool.clone())
                     .route("{key}/player/{id}", web::get().to(show_player_info))
                     .route("{key}/player/{id}/name", web::get().to(show_player_name))
                     .route("{key}/player/{id}/score", web::get().to(show_player_score))
-                    .route("{key}/player/{id}/update", web::post().to(set_player_info)),
+                    .route("{key}/player/{id}/update", web::post().to(set_player_info))
+                    .route("{key}/names", web::get().to(get_names))
+                    .route("{key}/names/update", web::post().to(set_names)),
             )
             .service(fs::Files::new("/", path).index_file("index.html"))
     })

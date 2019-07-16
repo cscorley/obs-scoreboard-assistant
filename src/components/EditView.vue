@@ -1,38 +1,58 @@
 <template>
-  <div id="editView">
-    <p>
-      <router-link to="/edit">Edit</router-link>&nbsp;
-      <router-link :to="{ path: `/overlay/${appKey}`}">Overlay</router-link>
-    </p>
-    <input id="appKeyInput" v-model="appKey" />
-    <PlayerEdit
-      :id="0"
-      :app-key="appKey"
-      :initial-name="defaultName"
-      :initial-score="defaultScore"
-    />
-    <PlayerEdit
-      :id="1"
-      :app-key="appKey"
-      :initial-name="defaultName"
-      :initial-score="defaultScore"
-    />
+  <div id="editView" class="container">
+    <div class="row">
+      <div class="col-sm">
+        <PlayerEdit
+          :id="0"
+          :app-key="appKey"
+          :initial-name="defaultName"
+          :initial-score="defaultScore"
+          :possible-names="allNames"
+        />
+      </div>
+      <div class="col-sm">
+        <PlayerEdit
+          :id="1"
+          :app-key="appKey"
+          :initial-name="defaultName"
+          :initial-score="defaultScore"
+          :possible-names="allNames"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import PlayerEdit from "./PlayerEdit.vue";
 
 export default {
   name: "EditView",
   data: function() {
     return {
-      appKey: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
       defaultName: "Unknown",
       defaultScore: 0,
-      message: "butts butts butts",
-      otherThing: 420
+      allNames: ["Unknown"]
     };
+  },
+  computed: {
+    appKey: function() {
+      return this.$route.params.appKey;
+    }
+  },
+  created() {
+    // Load names from API
+    var endpoint = `/api/${this.appKey}/names`;
+    axios
+      .get(endpoint)
+      .then(response => {
+        this.allNames = Array.from(response.data)
+          .map(f => f.name)
+          .sort();
+        this.allNames.unshift("");
+      })
+      .catch(console.log);
   },
   components: {
     PlayerEdit

@@ -1,0 +1,9 @@
+-- Your SQL goes here
+
+CREATE TABLE names
+(
+    id SERIAL NOT NULL PRIMARY KEY,
+    key_id INTEGER REFERENCES keys(id) NOT NULL,
+    name VARCHAR NOT NULL,
+    updated_on TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
