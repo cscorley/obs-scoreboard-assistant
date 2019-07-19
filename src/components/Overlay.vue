@@ -2,14 +2,12 @@
 <template>
   <div id="overlay" class="container-fluid">
     <div class="row">
-      <div class="col text-trucate text-right truncate">{{ players[0].name }}</div>
-      <div class="col-auto text-center">&#9876;</div>
-      <div class="col text-trucate text-left truncate">{{ players[1].name }}</div>
+      <div class="col text-right clip" id="left-name">{{ players[0].name }}</div>
+      <div class="col text-left clip" id="right-name">{{ players[1].name }}</div>
     </div>
-    <div class="row">
-      <div class="col text-right">{{ players[0].score }}</div>
-      <div class="col-auto text-center">&#8226;</div>
-      <div class="col text-left">{{ players[1].score }}</div>
+    <div class="row justify-content-center">
+      <div class="col-auto text-right" id="left-score">{{ players[0].score }}</div>
+      <div class="col-auto text-left" id="right-score">{{ players[1].score }}</div>
     </div>
   </div>
 </template>
@@ -54,16 +52,15 @@ export default {
 </script>
 
 <style scoped>
-#overlay {
-  display: block;
-  font-size: 30px;
-  font-size: 3.5vw;
-}
-
 .truncate {
-  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.clip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 </style>
