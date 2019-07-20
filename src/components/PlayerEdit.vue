@@ -4,14 +4,15 @@
     <b-form @reset="onReset" @submit="onSubmit">
       <b-form-select id="name" v-model="name" @change="onNameChanged" :options="possibleNames" />
       <b-form-input id="score" v-model.number="score" @change="onScoreChanged" type="number" />
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Clear</b-button>
+      <b-button variant="success" @click="incrementScore">Increment</b-button>
+      <b-button variant="danger" @click="decrementScore">Decrement</b-button>
     </b-form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { setInterval } from "timers";
 
 export default {
   name: "PlayerEdit",
@@ -29,16 +30,32 @@ export default {
     possibleNames: Array
   },
   created() {
-    var endpoint = `/api/${this.appKey}/player/${this.id}`;
-    axios
-      .get(endpoint)
-      .then(response => {
-        this.name = response.data.name;
-        this.score = response.data.score;
-      })
-      .catch();
+    this.syncData();
+    setInterval(this.syncData, 5000);
   },
   methods: {
+    syncData() {
+      var endpoint = `/api/${this.appKey}/player/${this.id}`;
+      axios
+        .get(endpoint)
+        .then(response => {
+          this.name = response.data.name;
+          this.score = response.data.score;
+        })
+        .catch();
+    },
+    incrementScore() {
+      this.score += 1;
+
+      var endpoint = `/api/${this.appKey}/player/${this.id}/increment-score`;
+      axios.post(endpoint).catch();
+    },
+    decrementScore() {
+      this.score -= 1;
+
+      var endpoint = `/api/${this.appKey}/player/${this.id}/decrement-score`;
+      axios.post(endpoint).catch();
+    },
     onScoreChanged() {
       this.onSubmit();
     },

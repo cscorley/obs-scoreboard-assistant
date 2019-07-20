@@ -119,6 +119,54 @@ fn show_player_score((info, pool): (web::Path<Info>, web::Data<Pool>)) -> Result
     Ok(HttpResponse::Ok().json(results[0].score))
 }
 
+fn increment_player_score(
+    (info, pool): (web::Path<Info>, web::Data<Pool>),
+) -> Result<HttpResponse> {
+    let conn = &pool.get().unwrap();
+    let key_result = keys
+        .filter(key.eq(info.key))
+        .load::<Key>(conn)
+        .expect("Error loading keys");
+
+    if key_result.len() == 0 {
+        return Err(error::ErrorBadRequest("Bad key"));
+    }
+
+    diesel::update(players.find((info.id, key_result[0].id)))
+        .set((
+            self::schema::players::dsl::score.eq(self::schema::players::dsl::score + 1),
+            self::schema::players::dsl::updated_on.eq(chrono::Utc::now()),
+        ))
+        .execute(conn)
+        .expect("could not update player");
+
+    Ok(HttpResponse::Ok().json(""))
+}
+
+fn decrement_player_score(
+    (info, pool): (web::Path<Info>, web::Data<Pool>),
+) -> Result<HttpResponse> {
+    let conn = &pool.get().unwrap();
+    let key_result = keys
+        .filter(key.eq(info.key))
+        .load::<Key>(conn)
+        .expect("Error loading keys");
+
+    if key_result.len() == 0 {
+        return Err(error::ErrorBadRequest("Bad key"));
+    }
+
+    diesel::update(players.find((info.id, key_result[0].id)))
+        .set((
+            self::schema::players::dsl::score.eq(self::schema::players::dsl::score - 1),
+            self::schema::players::dsl::updated_on.eq(chrono::Utc::now()),
+        ))
+        .execute(conn)
+        .expect("could not update player");
+
+    Ok(HttpResponse::Ok().json(""))
+}
+
 fn set_player_info(
     (info, player, pool): (web::Path<Info>, web::Json<PlayerUpdate>, web::Data<Pool>),
 ) -> Result<HttpResponse> {
@@ -296,6 +344,14 @@ fn main() {
                     .route("{key}/player/{id}", web::get().to(show_player_info))
                     .route("{key}/player/{id}/name", web::get().to(show_player_name))
                     .route("{key}/player/{id}/score", web::get().to(show_player_score))
+                    .route(
+                        "{key}/player/{id}/increment-score",
+                        web::post().to(increment_player_score),
+                    )
+                    .route(
+                        "{key}/player/{id}/decrement-score",
+                        web::post().to(decrement_player_score),
+                    )
                     .route("{key}/player/{id}/update", web::post().to(set_player_info))
                     .route("{key}/names", web::get().to(get_names))
                     .route("{key}/names/update", web::post().to(set_names)),
