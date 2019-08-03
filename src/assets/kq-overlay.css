@@ -1,0 +1,62 @@
+/*  Built for a viewport sized 2000 x 150 */
+body {
+  background-color: rgba(0, 0, 0, 0);
+  color: rgba(0, 0, 0, 1);
+  font-size: 50vh;
+}
+#left-name {
+  background-image: linear-gradient(
+    45deg,
+    rgba(241, 164, 25, 0),
+    rgba(241, 164, 25, 0.3),
+    rgba(241, 164, 25, 1),
+    rgba(241, 164, 25, 1)
+  );
+  position: fixed;
+  bottom: 50%;
+  right: 50%;
+  width: 50%;
+  height: auto;
+  padding-right: 10px;
+  font-size: 40%;
+  text-align: right;
+}
+#right-name {
+  background-image: linear-gradient(
+    -45deg,
+    rgba(121, 279, 250, 0),
+    rgba(121, 279, 250, 0.3),
+    rgba(121, 279, 250, 1),
+    rgba(121, 279, 250, 1)
+  );
+  position: fixed;
+  bottom: 50%;
+  left: 50%;
+  width: 50%;
+  height: auto;
+  padding-left: 10px;
+  font-size: 40%;
+  text-align: left;
+}
+#left-score {
+  background-color: rgba(241, 164, 25, 1);
+  position: fixed;
+  top: 50%;
+  right: 50%;
+  width: 3ch;
+  height: auto;
+  padding: 5px;
+  font-size: 60%;
+  text-align: center;
+}
+#right-score {
+  background-color: rgba(121, 279, 250, 1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 3ch;
+  height: auto;
+  padding: 5px;
+  font-size: 60%;
+  text-align: center;
+}

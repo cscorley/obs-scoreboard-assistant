@@ -1,14 +1,10 @@
 
 <template>
-  <div id="overlay" class="container-fluid">
-    <div class="row">
-      <div class="col text-right clip" id="left-name">{{ players[0].name }}</div>
-      <div class="col text-left clip" id="right-name">{{ players[1].name }}</div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-auto text-right" id="left-score">{{ players[0].score }}</div>
-      <div class="col-auto text-left" id="right-score">{{ players[1].score }}</div>
-    </div>
+  <div id="overlay">
+      <div class="clip" id="left-name">{{ players[0].name }}</div>
+      <div class="clip" id="right-name">{{ players[1].name }}</div>
+      <div id="left-score">{{ players[0].score }}</div>
+      <div id="right-score">{{ players[1].score }}</div>
   </div>
 </template>
 
