@@ -12,14 +12,15 @@
 
 <script>
 import axios from "axios";
-import { setInterval } from "timers";
+import { setInterval, clearInterval } from "timers";
 
 export default {
   name: "PlayerEdit",
   data: function() {
     return {
       name: this.initialName,
-      score: this.initialScore
+      score: this.initialScore,
+      interval: undefined
     };
   },
   props: {
@@ -31,7 +32,12 @@ export default {
   },
   created() {
     this.syncData();
-    setInterval(this.syncData, 5000); // ugh this stinks
+    this.interval = setInterval(this.syncData, 5000); // ugh this stinks
+  },
+  destroyed() {
+    if (this.interval !== undefined) {
+      this.interval.close();
+    }
   },
   methods: {
     syncData() {
