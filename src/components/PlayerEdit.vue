@@ -31,6 +31,7 @@ export default {
   },
   created() {
     this.syncData();
+    setInterval(this.syncData, 5000); // ugh this stinks
   },
   methods: {
     syncData() {

@@ -11,7 +11,7 @@ extern crate serde;
 
 use self::models::*;
 use actix_files as fs;
-use actix_web::{error, web, App, HttpResponse, HttpServer, Responder, Result};
+use actix_web::{error, web, App, HttpResponse, HttpServer, Result};
 use diesel::prelude::*;
 use obs_scoreboard_assistant::*;
 use serde::Deserialize;
@@ -48,6 +48,12 @@ struct KeyInfo {
 struct PlayerUpdate {
     name: String,
     score: i16,
+}
+
+#[derive(Deserialize, Debug)]
+struct PlayerSwap {
+    first_player: i32,
+    second_player: i32,
 }
 
 fn show_player_info((info, pool): (web::Path<Info>, web::Data<Pool>)) -> Result<HttpResponse> {
@@ -223,6 +229,68 @@ fn set_player_info(
     Ok(HttpResponse::Ok().json(&player_results[0]))
 }
 
+fn swap_player_info(
+    (info, swap, pool): (web::Path<KeyInfo>, web::Json<PlayerSwap>, web::Data<Pool>),
+) -> Result<HttpResponse> {
+    info!("Swapping players {:?}", swap);
+
+    let conn = &pool.get().unwrap();
+    // Check for key
+    // temp: if no key we can just insert one, who cares for now
+    let key_result = keys
+        .filter(key.eq(info.key))
+        .load::<Key>(conn)
+        .expect("Error loading players");
+
+    let new_key_id = if key_result.len() == 0 {
+        diesel::insert_into(keys)
+            .values(key.eq(info.key))
+            .returning(self::schema::keys::dsl::id)
+            .get_result(conn)
+            .expect("Could not insert new key")
+    } else {
+        key_result[0].id
+    };
+
+    let first_player_results = players
+        .find((swap.first_player, new_key_id))
+        .load::<Player>(conn)
+        .expect("Error loading players");
+
+    let second_player_results = players
+        .find((swap.second_player, new_key_id))
+        .load::<Player>(conn)
+        .expect("Error loading players");
+
+    let first_player = first_player_results
+        .first()
+        .expect("Could not find first player");
+
+    let second_player = second_player_results
+        .first()
+        .expect("Could not find second player");
+
+    diesel::update(players.find((first_player.id, new_key_id)))
+        .set((
+            self::schema::players::dsl::name.eq(&second_player.name),
+            self::schema::players::dsl::score.eq(second_player.score),
+            self::schema::players::dsl::updated_on.eq(chrono::Utc::now()),
+        ))
+        .execute(conn)
+        .expect("could not update first player");
+
+    diesel::update(players.find((second_player.id, new_key_id)))
+        .set((
+            self::schema::players::dsl::name.eq(&first_player.name),
+            self::schema::players::dsl::score.eq(first_player.score),
+            self::schema::players::dsl::updated_on.eq(chrono::Utc::now()),
+        ))
+        .execute(conn)
+        .expect("could not update second player");
+
+    Ok(HttpResponse::Ok().json(true))
+}
+
 fn get_names((info, pool): (web::Path<KeyInfo>, web::Data<Pool>)) -> Result<HttpResponse> {
     info!("get names: {:?}", info.key);
     let conn = &pool.get().unwrap();
@@ -353,6 +421,7 @@ fn main() {
                         web::post().to(decrement_player_score),
                     )
                     .route("{key}/player/{id}/update", web::post().to(set_player_info))
+                    .route("{key}/swap", web::post().to(swap_player_info))
                     .route("{key}/names", web::get().to(get_names))
                     .route("{key}/names/update", web::post().to(set_names)),
             )

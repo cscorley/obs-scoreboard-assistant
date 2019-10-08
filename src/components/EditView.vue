@@ -8,6 +8,7 @@
           :initial-name="defaultName"
           :initial-score="defaultScore"
           :possible-names="allNames"
+          ref="leftPlayer"
         />
       </div>
       <div class="col-sm">
@@ -17,7 +18,13 @@
           :initial-name="defaultName"
           :initial-score="defaultScore"
           :possible-names="allNames"
+          ref="rightPlayer"
         />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <b-button variant="primary" @click="swapPlayers">Swap</b-button>
       </div>
     </div>
   </div>
@@ -36,6 +43,9 @@ export default {
       allNames: ["Unknown"]
     };
   },
+  components: {
+    PlayerEdit
+  },
   computed: {
     appKey: function() {
       return this.$route.params.appKey;
@@ -52,10 +62,22 @@ export default {
           .sort();
         this.allNames.unshift("");
       })
-      .catch(console.log);
+      .catch();
   },
-  components: {
-    PlayerEdit
+  methods: {
+    swapPlayers() {
+      var endpoint = `/api/${this.appKey}/swap`;
+      axios
+        .post(endpoint, {
+          first_player: 0,
+          second_player: 1
+        })
+        .then(() => {
+          this.$refs.leftPlayer.syncData();
+          this.$refs.rightPlayer.syncData();
+        })
+        .catch();
+    }
   }
 };
 </script>
