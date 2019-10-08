@@ -36,7 +36,7 @@ export default {
   },
   destroyed() {
     if (this.interval !== undefined) {
-      this.interval.close();
+      clearInterval(this.interval);
     }
   },
   methods: {
