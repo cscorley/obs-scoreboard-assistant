@@ -23,12 +23,9 @@ export default {
   created() {
     // Load names from API
     var endpoint = `/api/${this.appKey}/names`;
-    axios
-      .get(endpoint)
-      .then(response => {
-        this.setNames(response.data);
-      })
-      .catch(console.log);
+    axios.get(endpoint).then(response => {
+      this.setNames(response.data);
+    });
   },
   computed: {
     appKey: function() {
@@ -54,12 +51,9 @@ export default {
       this.text = this.updatedNames.join("\n");
 
       var endpoint = `/api/${this.appKey}/names/update`;
-      axios
-        .post(endpoint, this.updatedNames)
-        .then(response => {
-          this.setNames(response.data);
-        })
-        .catch(console.log);
+      axios.post(endpoint, this.updatedNames).then(response => {
+        this.setNames(response.data);
+      });
     },
     onReset() {
       this.text = this.originalNames.join("\n");
